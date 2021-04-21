@@ -19,6 +19,7 @@ const getUserProfile = async (req, res, next) => {
     res.json(user.toObject());
   } catch (error) {}
 };
+
 const patchUserProfile = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
   const id = req.user;

@@ -1,4 +1,4 @@
 node_modules
 .vscode
 .env
-./src/database/faker.sqlite
+/src/database/faker.sqlite
