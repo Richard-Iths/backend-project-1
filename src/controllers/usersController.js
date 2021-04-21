@@ -12,6 +12,15 @@ const postLogin = async (req, res, next) => {
   }
 };
 
+const getUserProfile = async (req, res, next) => {
+  const id = req.user;
+  try {
+    const user = await userModel.findOne({ id });
+    res.json(user.toObject());
+  } catch (error) {}
+};
+
 module.exports = {
   postLogin,
+  getUserProfile,
 };

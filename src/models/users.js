@@ -4,7 +4,10 @@ const bcrypt = require("bcrypt");
 module.exports = (sequelize, Sequelize) => {
   class User extends Sequelize.Model {
     toObject() {
-      return this.email;
+      const user = this.dataValues;
+      delete user.id;
+      delete user.password;
+      return user;
     }
     getJwtToken() {
       return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
@@ -33,6 +36,7 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
+      hooks: {},
       sequelize,
       modelName: "User",
     }
