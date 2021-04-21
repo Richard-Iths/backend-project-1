@@ -1,5 +1,9 @@
 const express = require("express");
+const db = require("./database/db");
+
 require("dotenv").config();
+
+db.sequelize.sync();
 
 const app = express();
 
