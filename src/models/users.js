@@ -15,10 +15,15 @@ module.exports = (sequelize, Sequelize) => {
       });
     }
     async comparePassword(password) {
+      if (!(await bcrypt.compare(password, this.password))) {
+        throw new Error("Compare failed");
+      }
+    }
+    async hashPassword(password) {
       try {
-        await bcrypt.compare(password, this.password);
+        return await bcrypt.hash(password, 10);
       } catch (error) {
-        throw new Error("compare failed");
+        throw new Error("Hashed failed");
       }
     }
   }
@@ -36,7 +41,6 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
-      hooks: {},
       sequelize,
       modelName: "User",
     }
