@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const path = require("path");
 const UserModel = require("../models/users");
 const GeneratedUserModel = require("../models/generatedUsers");
-const GeneratedProfile = require("../models/generatedProfile");
+const GeneratedProfile = require("../models/generatedProfiles");
 
 const sequelize = new Sequelize.Sequelize({
   dialect: "sqlite",
@@ -24,6 +24,8 @@ generatedProfile.belongsTo(generatedProfile);
 const db = {
   userModel,
   sequelize,
+  generatedUserModel,
+  generatedProfile,
 };
 
 module.exports = db;

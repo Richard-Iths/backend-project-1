@@ -1,13 +1,26 @@
+const faker = require("faker");
 module.exports = (sequelize, Sequelize) => {
-  class GeneratedUser extends Sequelize.Model {}
+  class GeneratedUser extends Sequelize.Model {
+    static async generateUser() {
+      const generatedUsers = await GeneratedUser.findAll();
+      let uniqueUser = null;
+
+      while (!uniqueUser) {
+        const userName = faker.name.findName();
+        const userExists = generatedUsers.some(
+          (user) => user.name === userName
+        );
+        if (!userExists) {
+          uniqueUser = userName;
+        }
+      }
+
+      return uniqueUser;
+    }
+  }
   GeneratedUser.init(
     {
-      firstName: {
-        type: Sequelize.DataTypes.STRING,
-        unique: true,
-        required: true,
-      },
-      lastName: {
+      name: {
         type: Sequelize.DataTypes.STRING,
         unique: true,
         required: true,
