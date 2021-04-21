@@ -1,20 +1,27 @@
 const models = require("../database/db");
+const bcrypt = require("bcrypt");
+
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
 
 (async (models) => {
   try {
     await models.userModel.bulkCreate([
       {
         email: "stabbing.steve@fuskeluring",
-        password: "grillkorv123",
+        password: await hashPassword("grillkorv123"),
       },
       {
         email: "murdering.mike@fuskeluring.hack",
-        password: "bananpaj1337",
+        password: await hashPassword("bananpaj1337"),
       },
       {
         email: "crimes.johnsson@fuskeluring.hack",
-        password: "sötsursås42",
+        password: await hashPassword("sötsursås42"),
       },
     ]);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error.message);
+  }
 })(models);
