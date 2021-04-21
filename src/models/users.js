@@ -1,5 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
-  class User extends Sequelize.Model {}
+  class User extends Sequelize.Model {
+    toObject() {
+      delete this.id;
+    }
+  }
   User.init(
     {
       email: {
@@ -16,6 +20,11 @@ module.exports = (sequelize, Sequelize) => {
     {
       sequelize,
       modelName: "User",
+      getterMethods: {
+        toObject() {
+          return { email: this.email };
+        },
+      },
     }
   );
 
