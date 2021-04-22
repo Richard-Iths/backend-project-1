@@ -1,5 +1,14 @@
 module.exports = (sequelize, Sequelize) => {
-  class GeneratedProfile extends Sequelize.Model {}
+  class GeneratedProfile extends Sequelize.Model {
+    toObject() {
+      const profile = this.dataValues;
+      delete profile.id;
+      delete profile.GeneratedUserId;
+      delete profile.createdAt;
+      delete profile.updatedAt;
+      return profile;
+    }
+  }
   GeneratedProfile.init(
     {
       address: {
@@ -22,7 +31,6 @@ module.exports = (sequelize, Sequelize) => {
       },
       profession: {
         type: Sequelize.DataTypes.STRING,
-        unique: true,
         required: true,
       },
       picture: {

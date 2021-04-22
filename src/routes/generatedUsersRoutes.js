@@ -3,6 +3,10 @@ const generateUsersController = require("../controllers/generatedUsersController
 const authMiddleware = require("../middlewares/auth");
 
 const router = Router();
-router.get("/generated", generateUsersController.getGeneratedUser);
+router.get(
+  "/generated",
+  authMiddleware,
+  generateUsersController.getGeneratedUser
+);
 
 module.exports = router;
