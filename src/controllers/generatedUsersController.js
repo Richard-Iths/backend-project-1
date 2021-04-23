@@ -2,8 +2,9 @@ const {
   generatedUserModel,
   generatedProfileModel,
   generatedLimitModel,
+  userModel,
 } = require("../database/db");
-const Auth = require("../models/errors/auth");
+const AuthError = require("../models/errors/auth");
 const getGeneratedUser = async (req, res, next) => {
   const UserId = req.user;
   try {
@@ -12,7 +13,7 @@ const getGeneratedUser = async (req, res, next) => {
     });
 
     if (!generatedLimit) {
-      throw new Auth("user does not exist");
+      throw new AuthError("user does not exist");
     }
 
     generatedLimit.checkLimit();
@@ -35,6 +36,9 @@ const getGeneratedUser = async (req, res, next) => {
       data: {
         ...generatedUser.toObject(),
         ...generatedProfile.toObject(),
+        sharedLink: {
+          link: generatedUser.generateSharedLink(generatedProfile.toObject()),
+        },
       },
     });
   } catch (error) {
@@ -42,6 +46,21 @@ const getGeneratedUser = async (req, res, next) => {
   }
 };
 
+const getSharedUser = async (req, res, next) => {
+  const { link } = req.params;
+  const userId = req.user;
+  try {
+    const user = await userModel.findByPk(userId);
+    if (!user) {
+      throw new AuthError("unauthorized action", 409);
+    }
+    const generatedUser = generatedUserModel.decodeGeneratedLink(link);
+    res.json(generatedUser);
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   getGeneratedUser,
+  getSharedUser,
 };

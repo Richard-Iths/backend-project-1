@@ -1,4 +1,6 @@
 const faker = require("faker");
+const jwt = require("jsonwebtoken");
+const AuthError = require("./errors/auth");
 
 module.exports = (sequelize, Sequelize) => {
   class GeneratedUser extends Sequelize.Model {
@@ -36,6 +38,24 @@ module.exports = (sequelize, Sequelize) => {
       }
       return uniqueUser;
     }
+    generateSharedLink(profile) {
+      const token = jwt.sign(
+        { user: { ...this.toObject(), ...profile } },
+        process.env.JWT_SECRET,
+        { expiresIn: "1s" }
+      );
+      return process.env.GENERATED_LINK_ADDRESS.concat(token);
+    }
+
+    static decodeGeneratedLink(link) {
+      try {
+        const { user } = jwt.verify(link, process.env.JWT_SECRET);
+        return user;
+      } catch {
+        throw new AuthError("invalid link provided", 403);
+      }
+    }
+
     toObject() {
       const user = this.dataValues;
       delete user.id;

@@ -8,5 +8,10 @@ router.get(
   authMiddleware,
   generateUsersController.getGeneratedUser
 );
+router.get(
+  "/generated/:link",
+  authMiddleware,
+  generateUsersController.getSharedUser
+);
 
 module.exports = router;
