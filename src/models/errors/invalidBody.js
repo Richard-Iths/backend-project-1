@@ -1,5 +1,5 @@
-const ErrorBase = require("./errorBase");
-class InvalidBody extends ErrorBase {
+const BaseError = require("./baseError");
+class InvalidBody extends BaseError {
   constructor(statusCode, message) {
     super(message, statusCode);
   }
