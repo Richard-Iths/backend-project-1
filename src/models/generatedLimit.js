@@ -1,4 +1,5 @@
 const moment = require("moment");
+const Throttle = require("./errors/throttle");
 
 module.exports = (sequelize, Sequelize) => {
   class GeneratedLimit extends Sequelize.Model {
@@ -8,8 +9,9 @@ module.exports = (sequelize, Sequelize) => {
 
       if (currentDate > lastValid) {
         this.count = 0;
+        this.lastValidGenerate = new Date();
       } else if (this.count > process.env.GENERATED_USER_LIMIT) {
-        throw new Error("Max limit reached");
+        throw new Throttle("max limit of generated users reached", 403);
       }
       this.count++;
     }

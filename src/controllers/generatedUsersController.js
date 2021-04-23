@@ -3,12 +3,17 @@ const {
   generatedProfileModel,
   generatedLimitModel,
 } = require("../database/db");
+const Auth = require("../models/errors/auth");
 const getGeneratedUser = async (req, res, next) => {
   const UserId = req.user;
   try {
     const generatedLimit = await generatedLimitModel.findOne({
       where: { UserId },
     });
+
+    if (!generatedLimit) {
+      throw new Auth("user does not exist");
+    }
 
     generatedLimit.checkLimit();
 
@@ -33,7 +38,7 @@ const getGeneratedUser = async (req, res, next) => {
       },
     });
   } catch (error) {
-    res.json(error.message);
+    next(error);
   }
 };
 
