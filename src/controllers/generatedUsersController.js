@@ -1,20 +1,29 @@
-const models = require("../database/db");
-const generateUsersModel = models.generatedUserModel;
-const generateUserProfileModel = models.generatedProfileModel;
-
+const {
+  generatedUserModel,
+  generatedProfileModel,
+  generatedLimitModel,
+} = require("../database/db");
 const getGeneratedUser = async (req, res, next) => {
   const UserId = req.user;
   try {
-    const { user, profile } = await generateUsersModel.generateUser();
+    const generatedLimit = await generatedLimitModel.findOne({
+      where: { UserId },
+    });
 
-    const generatedUser = await generateUsersModel.create({
+    generatedLimit.checkLimit();
+
+    const { user, profile } = await generatedUserModel.generateUser();
+
+    const generatedUser = await generatedUserModel.create({
       ...user,
       UserId,
     });
-    const generatedProfile = await generateUserProfileModel.create({
+    const generatedProfile = await generatedProfileModel.create({
       ...profile,
       GeneratedUserId: generatedUser.id,
     });
+
+    await generatedLimit.save();
 
     res.status(201).json({
       message: "success",
