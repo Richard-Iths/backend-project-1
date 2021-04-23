@@ -38,6 +38,13 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
+      hooks: {
+        beforeBulkCreate(users) {
+          for (user of users) {
+            user.password = bcrypt.hashSync(user.password, 10);
+          }
+        },
+      },
       sequelize,
       modelName: "User",
     }
