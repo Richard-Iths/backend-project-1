@@ -1,4 +1,5 @@
 const models = require("../database/db");
+const Auth = require("../models/errors/auth");
 const InvalidBody = require("../models/errors/invalidBody");
 const userModel = models.userModel;
 
@@ -21,14 +22,26 @@ const getUserProfile = async (req, res, next) => {
   const id = req.user;
   try {
     const user = await userModel.findOne({ id });
+    if (!user) {
+      throw new Auth("User does not exist", 404);
+    }
+
     res.json(user.toObject());
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
 const patchUserProfile = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
   const id = req.user;
   try {
+    if (!oldPassword || !newPassword) {
+      throw new InvalidBody(
+        "new password and old password needs to be provided"
+      );
+    }
+
     const user = await userModel.findOne({ id });
     await user.comparePassword(oldPassword);
     user.password = await user.hashPassword(newPassword);
@@ -36,7 +49,7 @@ const patchUserProfile = async (req, res, next) => {
 
     res.status(200).json({ message: "password changed" });
   } catch (error) {
-    res.json(error.message);
+    next(error);
   }
 };
 
