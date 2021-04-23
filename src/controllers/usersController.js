@@ -34,7 +34,7 @@ const getUserProfile = async (req, res, next) => {
 
 const patchUserProfile = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
-  const id = req.user;
+  const userId = req.user;
   try {
     if (!oldPassword || !newPassword) {
       throw new InvalidBody(
@@ -42,9 +42,9 @@ const patchUserProfile = async (req, res, next) => {
       );
     }
 
-    const user = await userModel.findOne({ id });
+    const user = await userModel.findByPk(userId);
     await user.comparePassword(oldPassword);
-    user.password = await user.hashPassword(newPassword);
+    user.password = newPassword;
     await user.save();
 
     res.status(200).json({ message: "password changed" });

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const Auth = require("./errors/auth");
+const AuthError = require("./errors/auth");
 
 module.exports = (sequelize, Sequelize) => {
   class User extends Sequelize.Model {
@@ -17,11 +17,8 @@ module.exports = (sequelize, Sequelize) => {
     }
     async comparePassword(password) {
       if (!(await bcrypt.compare(password, this.password))) {
-        throw new Auth("passwords do not match", 409);
+        throw new AuthError("passwords do not match", 409);
       }
-    }
-    async hashPassword(password) {
-      return await bcrypt.hash(password, 10);
     }
   }
   User.init(
@@ -41,6 +38,11 @@ module.exports = (sequelize, Sequelize) => {
       hooks: {
         beforeBulkCreate(users) {
           for (user of users) {
+            user.password = bcrypt.hashSync(user.password, 10);
+          }
+        },
+        beforeSave(user) {
+          if (user.changed().includes("password")) {
             user.password = bcrypt.hashSync(user.password, 10);
           }
         },
